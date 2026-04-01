@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Заметки</title>
+
+<style>
+
+body{
+margin:0;
+font-family: Arial, sans-serif;
+background:#f3f3f3;
+}
+
+header{
+background:#4CAF50;
+color:white;
+padding:16px;
+text-align:center;
+font-size:20px;
+}
+
+.container{
+padding:15px;
+}
+
+textarea{
+width:100%;
+height:80px;
+padding:10px;
+font-size:16px;
+border-radius:8px;
+border:1px solid #ccc;
+box-sizing:border-box;
+resize:none;
+}
+
+button{
+margin-top:10px;
+width:100%;
+padding:12px;
+font-size:16px;
+border:none;
+border-radius:8px;
+background:#4CAF50;
+color:white;
+}
+
+button:active{
+background:#3e8e41;
+}
+
+.notes{
+margin-top:20px;
+}
+
+.note{
+background:white;
+padding:12px;
+border-radius:10px;
+margin-bottom:10px;
+box-shadow:0 2px 5px rgba(0,0,0,0.1);
+}
+
+.note-text{
+font-size:16px;
+margin-bottom:10px;
+word-wrap:break-word;
+}
+
+.note-buttons{
+display:flex;
+gap:10px;
+}
+
+.delete{
+background:#ff4444;
+}
+
+.edit{
+background:#2196F3;
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+Мои заметки
+</header>
+
+<div class="container">
+
+<textarea id="noteInput" placeholder="Напишите заметку..."></textarea>
+
+<button onclick="addNote()">Добавить заметку</button>
+
+<div class="notes" id="notes"></div>
+
+</div>
+
+<script>
+
+let notes = JSON.parse(localStorage.getItem("notes")) || [];
+
+function saveNotes(){
+localStorage.setItem("notes", JSON.stringify(notes));
+}
+
+function renderNotes(){
+
+const container = document.getElementById("notes");
+container.innerHTML = "";
+
+for(let i=0;i<notes.length;i++){
+
+const note = document.createElement("div");
+note.className = "note";
+
+const text = document.createElement("div");
+text.className = "note-text";
+text.innerText = notes[i];
+
+const buttons = document.createElement("div");
+buttons.className = "note-buttons";
+
+const deleteBtn = document.createElement("button");
+deleteBtn.innerText = "Удалить";
+deleteBtn.className = "delete";
+deleteBtn.onclick = function(){
+deleteNote(i);
+};
+
+const editBtn = document.createElement("button");
+editBtn.innerText = "Редактировать";
+editBtn.className = "edit";
+editBtn.onclick = function(){
+editNote(i);
+};
+
+buttons.appendChild(editBtn);
+buttons.appendChild(deleteBtn);
+
+note.appendChild(text);
+note.appendChild(buttons);
+
+container.appendChild(note);
+
+}
+
+}
+
+function addNote(){
+
+const input = document.getElementById("noteInput");
+const text = input.value.trim();
+
+if(text === "") return;
+
+notes.push(text);
+
+input.value = "";
+
+saveNotes();
+renderNotes();
+
+}
+
+function deleteNote(index){
+
+notes.splice(index,1);
+
+saveNotes();
+renderNotes();
+
+}
+
+function editNote(index){
+
+const newText = prompt("Редактировать заметку:", notes[index]);
+
+if(newText !== null && newText.trim() !== ""){
+notes[index] = newText;
+saveNotes();
+renderNotes();
+}
+
+}
+
+renderNotes();
+
+</script>
+
+</body>
+</html>
